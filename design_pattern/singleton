@@ -3,13 +3,24 @@ class Singleton
 public:
     Singleton(Singleton const&) = delete;
     Singleton& operator=(Singleton const&) = delete;
-
-    static std::shared_ptr<Singleton> instance()
+    
+    static pthread_mutex_t mutex; // unnecessary  in C++11 ,C++11 have done this,this explain why it is thread safe
+    
+    static Singleton& getInstance()
     {
-        static std::shared_ptr<Singleton> s{new Singleton};
-        return s;
+         pthread_mutex_lock(&mutex); // unnecessary  in C++11
+         static Singleton m_Singleton;
+         pthread_mutex_lock(&mutex); // unnecessary  in C++11
+         return m_Singleton;
     }
-
 private:
-    Singleton() {}
+    Singleton() 
+    {
+         pthread_mutex_init(&mutex);
+    }
 };
+
+//Once I thought about the problem since all object is the same instance,all obeject can not 
+//work if i delete one of them. the key point of this problem is DO NOT destroy singleton ob
+//ject until the program end.
+//if delete a singleton object must be consider,shared_ptr is an option.
