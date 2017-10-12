@@ -1,0 +1,39 @@
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, 
+the only constraint stopping you from robbing each of them is that adjacent houses have security 
+system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+Given a list of non-negative integers representing the amount of money of each house, 
+determine the maximum amount of money you can rob tonight without alerting the police.
+
+public class Solution {
+    public int rob(int[] num) {
+        int i = 0;
+        int e = 0;
+        for (int k = 0; k<num.length; k++) {
+            int tmp = i;
+            i = num[k] + e;
+            e = Math.max(tmp, e);
+        }
+        return Math.max(i,e);
+    }
+}
+
+思考：
+典型的动态规划问题，状态转移过程：num[i] rob最大值-> num[i+1]最大值
+但状态转移有两种情形。
+已知num[i]时求num[i+1]需要考虑是否rob 第i+1个。
+num[i]有2个状态： 第i个房间没有被抢的最大值 e 和 第i个房间被抢的最大值 k。
+既有：
+
+num[i] 对应 e[i]  k[i]
+
+考虑num[i+1] 对应的 e[i+1]： 
+也就是没有抢第i+1个房间，那么第i个房间可能被抢，也可能没被抢。
+所以e[i+1] = max(e[i],k[i]);
+
+考虑num[i+1]对应的k[i+1]:
+抢了第i+1个房间，那么注意，第i个房间就一定没被抢。
+所以k[i+1] = e[i] + value[i+1];
+
+房间数从0到i+1的过程中，每个数量都对应一个e 和 k，计算完所有的房间后，得到e[final] 和 k[final], res = max(e[final],k[final]).
+初始值0 时 e[0] = 0,k[0] = 0;
+由此可计算res。
